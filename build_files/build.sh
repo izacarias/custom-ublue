@@ -3,7 +3,10 @@
 set -ouex pipefail
 
 # Copy the contents of system_files/ of the git repo to /
-cp -avf "/ctx/system_files"/. /
+rsync -rvK /ctx/system_files/ /
+
+# ghcurl script taken from uBlue/Bluefin project
+install -Dm0755 /ctx/build_files/utils/ghcurl /usr/bin/ghcurl
 
 ### Install packages
 
@@ -24,4 +27,10 @@ dnf5 install -y tmux
 
 #### Example for enabling a System Unit File
 
-systemctl enable podman.socket
+# systemctl enable podman.socket
+
+
+# Installing Starship prompt
+ghcurl "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz" --retry 3 -o /tmp/starship.tar.gz
+tar -xzf /tmp/starship.tar.gz -C /tmp
+install -c -m 0755 /tmp/starship /usr/bin
