@@ -35,5 +35,5 @@ RUN rm -rf /opt && ln -s /var/opt /opt
 CMD ["/sbin/init"]
 
 
-## Verify final image and contents are correct.
+# Verify final image and contents are correct.
 RUN bootc container lint
