@@ -230,4 +230,4 @@ rm -rf /.gitkeep
 find /var/* -maxdepth 0 -type d \! -name cache \! -name log -exec rm -rf {} \;
 find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -rf {} \;
 find /run/* -maxdepth 0 -exec rm -rf {} \;
-rm -rf /tmp && mkdir -p /tmp
+# rm -rf /tmp && mkdir -p /tmp
