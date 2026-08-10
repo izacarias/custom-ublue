@@ -1,7 +1,8 @@
 ARG BASE_IMAGE_NAME="silverblue"
 ARG BASE_IMAGE_TAG="44"
-ARG BASE_IMAGE_REPO="quay.io/fedora-ostree-desktops"
-ARG BASE_IMAGE_REF="${BASE_IMAGE_REPO}/${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
+# ARG BASE_IMAGE_REPO="quay.io/fedora-ostree-desktops"
+# ARG BASE_IMAGE_REF="${BASE_IMAGE_REPO}/${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
+ARG BASE_IMAGE_REF="ghcr.io/ublue-os/silverblue-main:latest"
 
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
