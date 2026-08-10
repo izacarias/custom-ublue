@@ -227,7 +227,7 @@ echo "Removing temporary files and cache from DNF"
 dnf clean all
 rm -f /usr/lib/systemd/system/flatpak-add-fedora-repos.service
 rm -rf /.gitkeep
-find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
-find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -fr {} \;
-find /run/* -maxdepth 0 -exec rm -fr {} \;
+find /var/* -maxdepth 0 -type d \! -name cache -delete;
+find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -delete;
+find /run/* -maxdepth 0 -delete;
 rm -rf /tmp && mkdir -p /tmp
