@@ -106,7 +106,7 @@ sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/fedora-cisco-openh264.repo && \
     dnf -y swap '*openh264*' noopenh264 --allowerasing && \
     dnf -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm && \
     dnf -y swap ffmpeg-free ffmpeg --allowerasing && \
-    dnf -y install -x PackageKit --setopt="install_weak_deps=False" \
+    dnf -y install -x PackageKit --setopt="install_weak_deps=False" --allowerasing \
 	@multimedia intel-media-driver libva-intel-driver \
     ffmpeg{,-libs} libavcodec-freeworld gstreamer1-plugins-{bad-free,bad-free-libs,good,base} lame{,-libs} libjxl ffmpegthumbnailer
 
