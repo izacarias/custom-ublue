@@ -6,8 +6,9 @@ set -ouex pipefail
 rsync -rvK /ctx/system_files/ /
 
 # ghcurl script taken from uBlue/Bluefin project
-install -Dm0755 /ctx/build_files/utils/ghcurl /usr/bin/ghcurl
-
+mkdir -p /tmp/scripts/helpers
+install -Dm0755 /ctx/build_files/utils/ghcurl /tmp/scripts/helpers/ghcurl
+export PATH="/tmp/scripts/helpers:$PATH"
 
 # List of software to install
 FEDORA_PACKAGES=(
@@ -155,6 +156,11 @@ dnf -y install --enablerepo=docker-ce-stable \
 # dnf5 -y install package
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
+
+
+# Build GNOME Extensions from Git Submodules
+echo "Adding Gnome Extensions"
+/ctx/build_files/gnome-extensions.sh
 
 
 # Remove unnecessary files and directories to reduce image size
