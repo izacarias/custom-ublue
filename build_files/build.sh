@@ -237,5 +237,5 @@ rm -f /usr/lib/systemd/system/flatpak-add-fedora-repos.service
 rm -rf /.gitkeep
 find /var/* -maxdepth 0 -type d \! -name cache \! -name log -exec rm -rf {} \;
 find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -rf {} \;
-find /run/* -maxdepth 0 \! -name resolve -exec rm -rf {} \;
+find /run/* -maxdepth 1 \! -iname resolve -exec rm -rf {} \;
 # rm -rf /tmp && mkdir -p /tmp
