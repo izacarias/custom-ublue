@@ -6,4 +6,4 @@ build_push:
   script:
     - echo "This is my first job!"
     - date
-    - npm install -g rust-just
+    - ls /usr/bin
