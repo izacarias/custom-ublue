@@ -6,4 +6,4 @@ build_push:
   script:
     - echo "This is my first job!"
     - date
-    - apt install just
+    - apt update && apt install -y just
