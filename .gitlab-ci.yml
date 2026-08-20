@@ -1,0 +1,69 @@
+stages:
+  - build_push
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 1
+
+build_push:
+  stage: build_push
+  interruptible: true
+  rules:
+    # Merge request pipelines only build the image, they never push it,
+    # mirroring the `pull_request` guard in the GitHub Actions workflow.
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      variables:
+        PUSH_IMAGE: "false"
+    # Pushes to the default branch, scheduled pipelines and manual "Run
+    # pipeline" runs build AND push, matching the GitHub `push`/`schedule`/
+    # `workflow_dispatch` triggers.
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      variables:
+        PUSH_IMAGE: "true"
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      variables:
+        PUSH_IMAGE: "true"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      variables:
+        PUSH_IMAGE: "true"
+  script:
+    - set -euo pipefail
+    - echo "Pipeline source ${CI_PIPELINE_SOURCE}, push image = ${PUSH_IMAGE:-false}"
+    - date
+
+    # The runner only ships Docker, but the Justfile build/rechunk recipes
+    # shell out to podman-only features (e.g. `--mount=type=image` for
+    # chunkah), so podman is installed here instead of reusing Docker.
+    - apt-get update
+    - apt-get install -y --no-install-recommends just podman jq
+
+    - just check
+
+    # image-template.env is auto-loaded by the Justfile (dotenv), this just
+    # resolves the values the same way the GitHub Actions workflow does.
+    - IMAGE_NAME="$(just image_name)"
+    - IMAGE_NAME="${IMAGE_NAME,,}"
+    - DEFAULT_TAG="$(just generate-default-tag)"
+    - export IMAGE_NAME DEFAULT_TAG
+    - echo "Building ${IMAGE_NAME}:${DEFAULT_TAG}"
+
+    - just build "${IMAGE_NAME}" "${DEFAULT_TAG}"
+
+    # Rechunk for smaller delta updates (same as the GitHub Actions job).
+    - just rechunk "${IMAGE_NAME}" "${DEFAULT_TAG}"
+
+    - ALIAS_TAGS="$(just generate-build-tags "${IMAGE_NAME}" "${DEFAULT_TAG}")"
+    - echo "Tags for this build ${ALIAS_TAGS}"
+    - just tag-images "${IMAGE_NAME}" "${DEFAULT_TAG}" "${ALIAS_TAGS}"
+
+    - |
+      if [ "${PUSH_IMAGE:-false}" = "true" ]; then
+        echo "${CI_REGISTRY_PASSWORD}" | podman login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+        REGISTRY_IMAGE="${CI_REGISTRY_IMAGE,,}"
+        for tag in ${ALIAS_TAGS}; do
+          podman push --digestfile=/tmp/digestfile "${IMAGE_NAME}:${tag}" "${REGISTRY_IMAGE}:${tag}"
+        done
+        echo "Pushed digest: $(cat /tmp/digestfile)"
+      else
+        echo "Not pushing image for this pipeline source/branch"
+      fi
