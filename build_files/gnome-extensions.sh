@@ -17,6 +17,14 @@ unzip -o /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build/blur-my-sh
 glib-compile-schemas --strict /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/schemas
 rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 
+# Install Dash to Dock
+make -C /usr/share/gnome-shell/extensions/dash-to-dock@micxgx.gmail.com
+glib-compile-schemas --strict /usr/share/gnome-shell/extensions/dash-to-dock@micxgx.gmail.com/schemas
+
+# Install Gradia
+
+
+
 
 # Cleanup
 dnf5 -y remove glib2-devel meson sassc cmake dbus-devel
