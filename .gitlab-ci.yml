@@ -34,6 +34,6 @@ build_push:
     # shell out to podman-only features (e.g. `--mount=type=image` for
     # chunkah), so podman is installed here instead of reusing Docker.
     - apt-get update
-    - apt-get install -y --no-install-recommends podman jq
+    - apt-get install -y --no-install-recommends podman jq curl
     - mkdir -p ~/bin && curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/bin
-    - export PATH=$PATH:$HOME/bin && echo "Podman version:" $(podman --version)
+    - export PATH=$PATH:$HOME/bin && echo "Podman version:" $(podman --version) && echo "Just version:$(just --version)" 
