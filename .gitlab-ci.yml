@@ -40,4 +40,5 @@ build_push:
     - IMAGE_NAME=$(just image_name)
     - DEFAULT_TAG=$(just generate-default-tag)
     - IMAGE_REGISTRY='$CI_REGISTRY'
-    - $(command -v just) build ${IMAGE_NAME} ${DEFAULT_TAG}
+    - $(command -v podman) build --pull=newer --tag custom-ublue:latest --file Containerfile .
+
