@@ -17,9 +17,15 @@ rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 
 # Fix rounded corners and blur my shell
 REPO="https://github.com/kancko/gnome-rounded-blur"
-dest_dir="./binary"
-build_dir="/tmp"
-cd $build_dir && git clone $REPO && cd gnome-rounded-blur
+ext_dir="/tmp/gnome-rounded-blur"
+build_dir=$ext_dir"/build"
+dest_dir=$ext_dir"/binary"
+# delete $ext_dir if it exists
+if [ -d "$ext_dir" ]; then
+    rm -rf $ext_dir
+fi
+git clone $REPO $ext_dir && cd $ext_dir
+mkdir $build_dir && mkdir $dest_dir
 MUTTER_SYS_VER=$(mutter --version | grep -o -P '(?<=mutter ).*' | sed -e 's/"//g' -e "s/'//g" -e 's/\..*//g')
 HARDCODE_MUTTER_SYS_VER=$(cat meson.build | grep -o -P '(?<=mutter_req = ).*' | sed -e 's/"//g' -e "s/'//g" -e 's/\..*//g' -e 's/>//g' -e 's/=//g' -e 's/ //g')
 MUTTER_API_REPO_VER=$(cat meson.build | grep -o -P '(?<=mutter_api_version = ).*' | sed -e 's/"//g' -e "s/'//g" -e 's/ //g')
@@ -34,7 +40,8 @@ else
     sed -i -e '0,/'"mutter_req = ""$HARDCODE_MUTTER_SYS_VER"'/{s/'"$HARDCODE_MUTTER_SYS_VER"'/'"$MUTTER_SYS_VER"'/g}' meson.build
     sed -i -e '0,/'"mutter_api_version = ""$MUTTER_API_REPO_VER"'/{s/'"$MUTTER_API_REPO_VER"'/'"$DIFF_VALUE_2"'/g}' meson.build
 fi
-meson setup build && meson compile -C build && meson install -C build --destdir "$dest_dir" && sudo cp -rfv ./build/binary/usr/local/* /usr/
+# Disabling ccache to avoid build errors
+export CCACHE_DISABLE=1 && meson setup build && meson compile -C $build_dir && meson install -C $build_dir --destdir $dest_dir && sudo cp -frv $dest_dir/usr/local/* /usr/
 
 
 # Install Dash to Dock
