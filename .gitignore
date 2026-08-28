@@ -1,3 +1,4 @@
+.env
 cosign.key
 _build_*
 output
